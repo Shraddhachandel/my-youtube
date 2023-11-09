@@ -4,36 +4,40 @@ import { toggleMenu } from "../utils/appSlice";
 import { YOUTUBE_SEARCH_API } from "../utils/contants";
 import { cacheResults } from "../utils/searchSlice";
 
-const head = () => {
+const Head = () => {
    const [searchQuery, setSearchQuery] = useState("");
    const [suggestions, setSuggestions] = useState([]);
    const [showSuggestions, setShowSuggestions] = useState(false);
 
    const searchCache = useSelector((store) => store.search);
   const dispatch = useDispatch();
-   useEffect(() => {
-    const timer = setTimeout(() =>
-     {
-       if (searchCache[searchQuery]) {
-         setSuggestions(searchCache[searchQuery]);
-       } else {
-         getSearchSugsestions();
-       }
-     }, 200);
 
-   return () => {
-     clearTimeout(timer);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchCache[searchQuery]) {
+        setSuggestions(searchCache[searchQuery]);
+      } else {
+        getSearchSugsestions();
+      }
+    }, 200);
+
+    return () => {
+      clearTimeout(timer);
     };
-   }, [searchQuery]);
+  }, [searchQuery]);
+
 
    const getSearchSugsestions = async () => {
-     const data = await fetch(YOUTUBE_SEARCH_API + searchQuery);
-     const json = await data.json();
-     setSuggestions(json[1]);
- 
-     dispatch(cacheSuggestions({ [searchQuery]: json[1] }));
-     
-   };
+    const data = await fetch(YOUTUBE_SEARCH_API + searchQuery);
+    const json = await data.json();
+    setSuggestions(json[1]);
+    dispatch(
+      cacheResults({
+        [searchQuery]: json[1],
+      })
+    );
+  };
 
   const toggleMenuHandler = () => {
     dispatch(toggleMenu());
@@ -93,4 +97,4 @@ const head = () => {
  
     );
   };
-export default head;
+export default Head;
